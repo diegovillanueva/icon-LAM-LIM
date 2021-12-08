@@ -61,14 +61,13 @@
 
 # More information
 
-- TROPOS tutorial (need TROPOS vpn)
-    - [https://tropos.gitlab-pages.dkrz.de/uni-master-module-t2/nbooks/01-Plotting-ICON-Topography.html](https://tropos.gitlab-pages.dkrz.de/uni-master-module-t2/nbooks/01-Plotting-ICON-Topography.html)
-    - [https://gitea.tropos.de/Modelling/Workflow-Tutorials/src/branch/master/Tutorials/How_to_Access_Copernicus_ECMWF_data.md](https://gitea.tropos.de/Modelling/Workflow-Tutorials/src/branch/master/Tutorials/How_to_Access_Copernicus_ECMWF_data.md)
+- TROPOS tutorial (thanks to Fabian, need TROPOS vpn)
+    - [https://tropos.gitlab-pages.dkrz.de/uni-master-module-t2/docs/Exercises_on_ICON-LAM.html](https://tropos.gitlab-pages.dkrz.de/uni-master-module-t2/docs/Exercises_on_ICON-LAM.html)
+    - [https://gitea.tropos.de/senf-docs/ICON-Documentation/src/branch/master/tutorials/Getting-Started-with-DWD-ICON-Tools.md](https://gitea.tropos.de/senf-docs/ICON-Documentation/src/branch/master/tutorials/Getting-Started-with-DWD-ICON-Tools.md)
 - MPI tutorial
     - [https://www.dwd.de/EN/ourservices/nwv_icon_tutorial/pdf_volume/icon_tutorial2020_en.pdf](https://www.dwd.de/EN/ourservices/nwv_icon_tutorial/pdf_volume/icon_tutorial2020_en.pdf)
-- Quickstart guide
+- ICON Quickstart guide
     - [https://wiki.mpimet.mpg.de/doku.php?id=models:pot-pourri:how_to:icon_quick_start_guide](https://wiki.mpimet.mpg.de/doku.php?id=models:pot-pourri:how_to:icon_quick_start_guide)
 - ICON tools
-    - [https://gitea.tropos.de/senf-docs/ICON-Documentation/src/branch/master/tutorials/Getting-Started-with-DWD-ICON-Tools.md](https://gitea.tropos.de/senf-docs/ICON-Documentation/src/branch/master/tutorials/Getting-Started-with-DWD-ICON-Tools.md)
     - [https://wiki.c2sm.ethz.ch/pub/MODELS/ICONDwdIconTools/doc_icontools.pdf](https://wiki.c2sm.ethz.ch/pub/MODELS/ICONDwdIconTools/doc_icontools.pdf)
 
