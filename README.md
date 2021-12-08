@@ -5,12 +5,12 @@
 # Grid information and external parameters
 
 - Web for grid generation and external parameters 
-	- [https://oflxd21.dwd.de/cgi-bin/spp1167/webservice.cgi]()
+	- [DWD Web Service](https://oflxd21.dwd.de/cgi-bin/spp1167/webservice.cgi)
 	    + user-id: 	icon-web
 	    + PW: icon@dwd
 + Select desired grid resolution as RxxByy
     + Each Sub-domain has 4x the cell number
-+ example:  [examples/grid_dwd_web.pdf]()
++ example:  [Example of 4 nested domains](examples/grid_dwd_web.pdf)
 
 # Boundary condition data and initial condition data
 
