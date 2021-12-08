@@ -14,23 +14,60 @@
 
 # Boundary condition data and initial condition data
 
++ install icon-tools
+	- a compilation is sometimes included with the icon repository
+	- [https://gitlab.dkrz.de/dwd-sw/dwd_icon_tools](https://gitlab.dkrz.de/dwd-sw/dwd_icon_tools)
 + download IFS data on ecaccess.ecmwf.int server (e.g., LIM access)
     - get access (e.g., Group of Johannes Quaas or Manfred Wendisch @ LIM)
     - access using: 
-        - `ssh ecaccess.ecmwf.int`
+	- `ssh ecaccess.ecmwf.int`
     - download using:
-        - /work/bb1114/b380602/icon-build/cloud-tracking-initial-data/{mars4icon_smi_new,run_ifs4icon_12_set.ksh}
-+ regrid INITIAL conditions
-    + /mnt/lustre02/work/bb1114/b380602/icon-build/icon-tools/dwd_icon_tools/example/runscripts/create_ic_ifs2icon_dv
-+ regrid BOUNDARY conditions
-    + /mnt/lustre02/work/bb1114/b380602/icon-build/icon-tools/dwd_icon_tools/example/runscripts/create_bc_ifs2icon_dv
-
+	- scripts/run_ifs4icon_bc.ksh (forecasts for boundary conditions)
+	- scripts/run_ifs4icon_init.ksh (analyses for initial condition)
+	- Although it takes longer, if no forecast are available, you can use analyses for the boundary conditions:
+		- scripts/run_ifs4icon_bc_ana.ksh (analyses)
+    - send to your remote machine (e.g., MISTRAL) with:
+	- `scp -r *.grb YourAccount@mistral.dkrz.de:/work/YourProject/YourAccount/`
++ regrid INITIAL conditions with
+    + scripts/create_ic_ifs2icon_dv
++ regrid BOUNDARY conditions with
+    + scripts/create_bc_ifs2icon_dv
 
 # Configure the run to find the data
 
-+ run model with fabian config
-    + /work/bb1114/b380602/icon-build/run/exp.icon_lam_1dom_EURECHA_1d.run
-        - grids_folder
-        - init_data_path, add_link_file **
-        - latbc_boundary_grid, latbc_filename, latbc_path
-        - start_date, end_date
++ Use template for the EURECHA campaign:
+    + scripts/exp.icon_lam_1dom_EURECHA_1d.run
++ Adapt the following variables:
+	- grids_folder
+	- init_data_path
+		- and the following lines starting with "add_link_file"
+	- latbc_boundary_grid, latbc_filename, latbc_path
+	- start_date, end_date
++ A note about nesting:
+	- every subdomain will have 4 times the cell number and the timestep will be halved.
+
+# Run the model
+
+- `cd PathToIcon/run/`
+- `sbatch exp.icon_lam_1dom_EURECHA_1d.run`
+
+# Regrid
+
+
+# Extras
+
+- scripts/bash_functions.sh
+
+# More information
+
+- TROPOS tutorial (need TROPOS vpn)
+    [https://tropos.gitlab-pages.dkrz.de/uni-master-module-t2/nbooks/01-Plotting-ICON-Topography.html](https://tropos.gitlab-pages.dkrz.de/uni-master-module-t2/nbooks/01-Plotting-ICON-Topography.html)
+    [https://gitea.tropos.de/Modelling/Workflow-Tutorials/src/branch/master/Tutorials/How_to_Access_Copernicus_ECMWF_data.md](https://gitea.tropos.de/Modelling/Workflow-Tutorials/src/branch/master/Tutorials/How_to_Access_Copernicus_ECMWF_data.md)
+- MPI tutorial
+    [https://www.dwd.de/EN/ourservices/nwv_icon_tutorial/pdf_volume/icon_tutorial2020_en.pdf](https://www.dwd.de/EN/ourservices/nwv_icon_tutorial/pdf_volume/icon_tutorial2020_en.pdf)
+- Quickstart guide
+    [https://wiki.mpimet.mpg.de/doku.php?id=models:pot-pourri:how_to:icon_quick_start_guide](https://wiki.mpimet.mpg.de/doku.php?id=models:pot-pourri:how_to:icon_quick_start_guide)
+- ICON tools
+    [https://gitea.tropos.de/senf-docs/ICON-Documentation/src/branch/master/tutorials/Getting-Started-with-DWD-ICON-Tools.md](https://gitea.tropos.de/senf-docs/ICON-Documentation/src/branch/master/tutorials/Getting-Started-with-DWD-ICON-Tools.md)
+    [https://wiki.c2sm.ethz.ch/pub/MODELS/ICONDwdIconTools/doc_icontools.pdf](https://wiki.c2sm.ethz.ch/pub/MODELS/ICONDwdIconTools/doc_icontools.pdf)
+
