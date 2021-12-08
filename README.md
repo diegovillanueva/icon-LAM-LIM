@@ -6,8 +6,7 @@
 
 - Web for grid generation and external parameters 
 	- [DWD Web Service](https://oflxd21.dwd.de/cgi-bin/spp1167/webservice.cgi)
-	    + user-id: 	icon-web
-	    + PW: icon@dwd
+	    + there is a general user and password available after request
 + Select desired grid resolution as RxxByy
     + Each Sub-domain has 4x the cell number
 + example:  [Example of 4 nested domains](examples/grid_dwd_web.pdf)
