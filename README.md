@@ -1,16 +1,18 @@
 
-# Grid information and external parameters
+# 1) Grid information and external parameters
     + Web for grid generation and extpar
-        + <https://oflxd21.dwd.de/cgi-bin/spp1167/webservice.cgi>
+        + < https://oflxd21.dwd.de/cgi-bin/spp1167/webservice.cgi >
             + user-id: icon-web
             + PW: icon@dwd
         + Select desired grid resolution as RxxByy
             + Each Sub-domain has 4x the cell number
-        + example:  examples/grid_dwd_web.pdf
+        + example:  < examples/grid_dwd_web.pdf >
 
 
 # 2) Boundary condition data and initial condition data
-    + download ifs data on ecaccess.ecmwf.int server (LIM access)
+    + download IFS data on ecaccess.ecmwf.int server (e.g., LIM access)
+        - get access (e.g., Group of Johannes Quaas or Manfred Wendisch @ LIM)
+        - access using `ssh ecaccess.ecmwf.int`
         - /work/bb1114/b380602/icon-build/cloud-tracking-initial-data/{mars4icon_smi_new,run_ifs4icon_12_set.ksh}
     + regrid INITIAL conditions
         + /mnt/lustre02/work/bb1114/b380602/icon-build/icon-tools/dwd_icon_tools/example/runscripts/create_ic_ifs2icon_dv
