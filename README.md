@@ -53,6 +53,8 @@
 
 # Regrid
 
+- scripts/regrid_clm.sh
+- scripts/grid_details.py
 
 # Extras
 
