@@ -22,21 +22,21 @@
     - access using: 
 	- `ssh ecaccess.ecmwf.int`
     - download using:
-	- scripts/run_ifs4icon_bc.ksh (forecasts for boundary conditions)
-	- scripts/run_ifs4icon_init.ksh (analyses for initial condition)
+	- [scripts/run_ifs4icon_bc.ksh](scripts/run_ifs4icon_bc.ksh ) (forecasts for boundary conditions)
+	- [scripts/run_ifs4icon_init.ksh](scripts/run_ifs4icon_init.ksh ) (analyses for initial condition)
 	- Although it takes longer, if no forecast are available, you can use analyses for the boundary conditions:
-		- scripts/run_ifs4icon_bc_ana.ksh (analyses)
+		- [scripts/run_ifs4icon_bc_ana.ksh](scripts/run_ifs4icon_bc_ana.ksh) (analyses)
     - send to your remote machine (e.g., MISTRAL) with:
 	- `scp -r *.grb YourAccount@mistral.dkrz.de:/work/YourProject/YourAccount/`
 + regrid INITIAL conditions with
-    + scripts/create_ic_ifs2icon_dv
+    + [scripts/create_ic_ifs2icon_dv](scripts/create_ic_ifs2icon_dv)
 + regrid BOUNDARY conditions with
-    + scripts/create_bc_ifs2icon_dv
+    + [scripts/create_bc_ifs2icon_dv](scripts/create_bc_ifs2icon_dv)
 
 # Configure the run to find the data
 
 + Use template for the EURECHA campaign:
-    + scripts/exp.icon_lam_1dom_EURECHA_1d.run
+    + [scripts/exp.icon_lam_1dom_EURECHA_1d.run](scripts/exp.icon_lam_1dom_EURECHA_1d.run)
 + Adapt the following variables:
 	- grids_folder
 	- init_data_path
@@ -53,12 +53,12 @@
 
 # Regrid
 
-- scripts/regrid_clm.sh
-- scripts/grid_details.py
+- [scripts/regrid_clm.sh](scripts/regrid_clm.sh)
+- [scripts/grid_details.py](scripts/grid_details.py)
 
 # Extras
 
-- scripts/bash_functions.sh
+- [scripts/bash_functions.sh](scripts/bash_functions.sh)
 
 # More information
 
