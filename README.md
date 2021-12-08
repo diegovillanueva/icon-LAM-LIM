@@ -27,9 +27,9 @@
 		- [scripts/run_ifs4icon_bc_ana.ksh](scripts/run_ifs4icon_bc_ana.ksh) (analyses)
 	- send to your remote machine (e.g., MISTRAL) with:
 		- `scp -r *.grb YourAccount@mistral.dkrz.de:/work/YourProject/YourAccount/`
-+ regrid INITIAL conditions with
++ regrid INITIAL conditions with (use sbatch)
     + [scripts/create_ic_ifs2icon_dv](scripts/create_ic_ifs2icon_dv)
-+ regrid BOUNDARY conditions with
++ regrid BOUNDARY conditions with (use sbatch)
     + [scripts/create_bc_ifs2icon_dv](scripts/create_bc_ifs2icon_dv)
 
 # Configure the run to find the data
@@ -50,7 +50,7 @@
 - `cd PathToIcon/run/`
 - `sbatch exp.icon_lam_1dom_EURECHA_1d.run`
 
-# Regrid
+# Regrid (use sbatch)
 
 - [scripts/regrid_clm.sh](scripts/regrid_clm.sh)
 - [scripts/grid_details.py](scripts/grid_details.py)
