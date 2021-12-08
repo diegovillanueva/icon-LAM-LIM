@@ -1,0 +1,230 @@
+#! /bin/bash
+#
+#
+# Cray batch script for the DWD ICON tools
+#
+# MPI+OpenMP hybrid run
+#
+# Platform: Cray XC30
+#           xce.dwd.de
+#
+#
+# Adapted version of xce_remap_inidata for Mistral
+# adapted by Guido Cioni (guido.cioni@mpimet.mpg.de)
+#
+# 06/2014 : F. Prill, DWD
+# 11/2021 : D. Villanueva, LIM
+
+#-----------------------------------------------------------------------------
+#SBATCH --account=bb1143
+#SBATCH --job-name=inidata.run
+#SBATCH --partition=compute2
+#SBATCH --nodes=1
+#SBATCH --threads-per-core=2
+#SBATCH --output=LOG.inidata.run.%j.o
+#SBATCH --error=LOG.inidata.run.%j.o
+#SBATCH --exclusive
+#SBATCH --time=00:30:00
+#=============================================================================
+
+#---------------------------------------------------------------------------
+# openmp environment variables
+# ----------------------------
+export OMP_NUM_THREADS=6 # 6 on compute2
+export ICON_THREADS=6    # 6 on compute2
+export OMP_SCHEDULE=dynamic,1
+export OMP_DYNAMIC="false"
+export OMP_STACKSIZE=4096M
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/netcdf/netcdf_fortran-4.4.3-gcc62/lib/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/netcdf/netcdf_c-4.4.1.1-gcc48/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/hdf5/hdf5-1.8.14-gcc48/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/eccodes/eccodes-2.5.0-gcc48/lib/
+
+# ----------------------------
+# MPI variables
+# ----------------------------
+mpi_root=/sw/rhel6-x64/intel/impi/5.0.3.048/lib64
+no_of_nodes=${SLURM_JOB_NUM_NODES:-1}
+mpi_procs_pernode=6
+mpi_total_procs=$((no_of_nodes * mpi_procs_pernode))
+
+
+test -r /etc/ksh.kshrc && . /etc/ksh.kshrc
+#set -x #do not print out every command
+
+OMP_NUM_THREADS=4
+# disable core dumps
+export RLIMIT_CORE=0
+export ATP_MAX_CORES=0
+
+#-----------------------------------------------------------------------------
+# PART I: Create auxiliary grid file which contains only the cells of the 
+#         boundary zone.
+#-----------------------------------------------------------------------------
+
+# grid file defining the lateral boundary
+AUXGRID="lateral_boundary"
+
+# file name of limited-area (output) grid
+LOCALGRID="/work/bb1114/b380602/icon-build/cloud-tracking-initial-data/DWD_web_fabian_emulation/domain1_DOM01.nc"
+
+
+BASEDIR=$(pwd)
+
+OUTDIR=$BASEDIR/OUTDIR
+mkdir -p $OUTDIR
+ 
+cd ${OUTDIR}
+ 
+cat > NAMELIST_ICONSUB << EOF_1
+&iconsub_nml
+  grid_filename    = '${LOCALGRID}',
+  output_type      = 4,
+  lwrite_grid      = .TRUE.,
+/
+&subarea_nml
+  ORDER            = "${OUTDIR}/${AUXGRID}",
+  grf_info_file    = '${LOCALGRID}',
+  min_refin_c_ctrl = 1 !lower bound for definition of boundary region
+  max_refin_c_ctrl = 14 !upper bound
+/
+EOF_1
+	 
+RUN_ICON_TOOL="iconsub  -vvv --nml ${OUTDIR}/NAMELIST_ICONSUB"
+
+echo srun --kill-on-bad-exit=1 \
+	--nodes=${SLURM_JOB_NUM_NODES:-1} \
+	--ntasks-per-node=${mpi_procs_pernode} \
+	$RUN_ICON_TOOL
+
+echo $RUN_ICON_TOOL
+
+#-----------------------------------------------------------------------------
+# PART II: Extract boundary data
+#-----------------------------------------------------------------------------
+ 
+#-----------------------------------------------------------------------------
+# preparations:
+ 
+rm -f ncstorage.tmp*
+#set +x
+
+cat > NAMELIST_ICONREMAP_FIELDS << EOF_2A
+&input_field_nml
+ inputname      = "u"         
+ outputname     = "u"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "v"         
+ outputname     = "v"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "w"         
+ outputname     = "w"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "t"         
+ outputname     = "t"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "q"         
+ outputname     = "qv"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "clwc"         !search Cloud Water Content
+ outputname     = "qc"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "ciwc"         !search Cloud Ice Content
+ outputname     = "qi"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "crwc"         ! rain water content
+ outputname     = "qr"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "lnsp"          !logarithm of surface pressure
+ outputname     = "lnps"          
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "cswc" !snow water content
+ outputname     = "qs"
+ intp_method    = 3
+/
+&input_field_nml
+ inputname      = "z" 
+ outputname     = "GEOP_SFC"
+ intp_method    = 3
+/
+EOF_2A
+
+
+
+# ncdump -h ecmwf-fc-ce-20210516-0_00.nc #(with cdo -f copy)
+#/work/bb1224/2021_MS-COURSE/data/ecmwf/ecmwf-fc-ce-20210516-0_00.grb
+#crwc cswc t q w lnsp clwc ciwc u v z 
+
+# cdo showname /work/bb1114/b380602/icon-build/cloud-tracking-initial-data/examples_fabian/latbc_bc-grid-lpz_r2_dom01_DOM01.grid_ecmwf-fc-ce-20210516-0_00.nc
+# T W LNPS GEOP_SFC QV QC QI QR QS VN
+ 
+#-----------------------------------------------------------------------------
+# loop over file list:
+ 
+ 
+# file name of input grid
+INGRID=/work/mh0731/m300382/icon_grid_0027_R03B08_N02.nc
+
+datafilefull="/work/bb1224/2021_MS-COURSE/data/ecmwf/ecmwf-fc-ce-20210516-0_00.grb"
+
+for datafilefull in /work/bb1224/2021_MS-COURSE/data/ecmwf/ecmwf-fc-ce-20210516-0_*.grb ; do
+
+datafile="${datafilefull##*/}"  # get filename without path
+outdatafile=${datafile%.*}      # get filename without suffix
+ 
+cat > NAMELIST_ICONREMAP << EOF_2B
+&remap_nml
+ in_grid_filename  = '${datafilefull}'
+ in_filename       = '${datafilefull}'
+ in_type           = 1
+ out_grid_filename = '${OUTDIR}/${AUXGRID}.grid.nc'
+ out_filename      = '${OUTDIR}/${outdatafile}_lbc.nc'
+ out_type          = 2
+ out_filetype      = 4
+ l_have3dbuffer    = .false.
+ ncstorage_file    = "ncstorage.tmp"
+/
+EOF_2B
+ 
+RUN_ICON_TOOL="iconremap --remap_nml ${OUTDIR}/NAMELIST_ICONREMAP --input_field_nml ${OUTDIR}/NAMELIST_ICONREMAP_FIELDS"
+
+echo srun --kill-on-bad-exit=1 \
+	--nodes=${SLURM_JOB_NUM_NODES:-1} \
+	--ntasks-per-node=${mpi_procs_pernode} \
+	$RUN_ICON_TOOL
+
+$RUN_ICON_TOOL
+
+rm -f ncstorage.tmp*
+rm -f ${OUTDIR}/NAMELIST_ICONREMAP
+
+done
+
+
+#-----------------------------------------------------------------------------
+# clean-up
+ 
+rm -f nml.log  NAMELIST_SUB NAMELIST_ICONREMAP_FIELDS
+ 
+
+#-----------------------------------------------------------------------------
+exit
+#-----------------------------------------------------------------------------

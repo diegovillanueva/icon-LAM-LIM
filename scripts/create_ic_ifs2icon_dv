@@ -1,0 +1,246 @@
+#! /bin/bash
+#
+#
+# Cray batch script for the DWD ICON tools
+#
+# MPI+OpenMP hybrid run
+#
+# Platform: Cray XC30
+#           xce.dwd.de
+#
+#
+# Adapted version of xce_remap_inidata for Mistral
+# adapted by Guido Cioni (guido.cioni@mpimet.mpg.de)
+#
+# 06/2014 : F. Prill, DWD
+# 11/2021 : D. Villanueva, LIM
+
+#-----------------------------------------------------------------------------
+#SBATCH --account=bb1143
+#SBATCH --job-name=inidata.run
+#SBATCH --partition=compute2
+#SBATCH --nodes=1
+#SBATCH --threads-per-core=2
+#SBATCH --output=LOG.inidata.run.%j.o
+#SBATCH --error=LOG.inidata.run.%j.o
+#SBATCH --exclusive
+#SBATCH --time=00:30:00
+#=============================================================================
+
+test -r /etc/ksh.kshrc && . /etc/ksh.kshrc
+#set -x #do not print out every command
+
+OMP_NUM_THREADS=4
+# disable core dumps
+export RLIMIT_CORE=0
+export ATP_MAX_CORES=0
+
+intp_method=2 #area-weighted formula ( https://wiki.c2sm.ethz.ch/pub/MODELS/ICONDwdIconTools/doc_icontools.pdf s11)
+
+BASEDIR=$(pwd)
+
+cat > ${BASEDIR}/tmp.nml << REMAP_NML_EOF
+! REMAPPING NAMELIST FILE
+!
+&remap_nml
+ in_grid_filename   = "/work/bb1224/2021_MS-COURSE/data/ecmwf/ecmwf-ana-global-2021051600.grb"
+ in_filename	    = "/work/bb1224/2021_MS-COURSE/data/ecmwf/ecmwf-ana-global-2021051600.grb"
+ in_type            = 1
+ !
+ out_grid_filename  = "/work/bb1114/b380602/icon-build/cloud-tracking-initial-data/DWD_web_fabian_emulation/domain1_DOM01.nc"
+ out_filename       = "ifs2icon_result.nc"
+ out_type           = 2
+ !
+ out_filetype       = 4
+ !
+ lsynthetic_grid    = .FALSE.
+/
+! DEFINITION FOR INPUT DATA FIELD
+!
+&input_field_nml  ! temperature
+ inputname   = "T"         
+ outputname  = "T"          
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! horiz. wind comp. u and v
+ inputname   = "U", "V"         
+ outputname  = "VN"  
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! vertical velocity
+ inputname   = "w" 
+ outputname  = "W"
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! surface pressure
+ inputname   = "LNSP"
+ outputname  = "LNPS" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! geopotential
+ inputname   = "Z"
+ outputname  = "GEOP_SFC"
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! cloud liquid water content
+ inputname   = "CLWC"
+ outputname  = "QC" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! cloud ice content
+ inputname   = "CIWC"
+ outputname  = "QI" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! rain water content
+ inputname   = "CRWC"
+ outputname  = "QR" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! snow water content
+ inputname   = "CSWC"
+ outputname  = "QS" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! snow temperature
+ inputname   = "TSN"
+ outputname  = "T_SNOW" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! water content of snow
+ inputname   = "SD"
+ outputname  = "W_SNOW" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! density of snow
+ inputname   = "RSN"
+ outputname  = "RHO_SNOW" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! snow albedo
+ inputname   = "ASN"
+ outputname  = "ALB_SNOW" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! skin temperature
+ inputname   = "SKT"
+ outputname  = "SKT" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! sea surface temperature
+ inputname   = "SST"
+ outputname  = "SST" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil temperature level 1
+ inputname   = "STL1"
+ outputname  = "STL1" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil temperature level 2
+ inputname   = "STL2"
+ outputname  = "STL2" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil temperature level 3
+ inputname   = "STL3"
+ outputname  = "STL3" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil temperature level 4
+ inputname   = "STL4"
+ outputname  = "STL4" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! sea-ice cover
+ inputname   = "CI"
+ outputname  = "CI" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! water cont. of interception storage
+ inputname   = "SRC"
+ outputname  = "W_I" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! surface roughness
+ inputname   = "SR"
+ outputname  = "Z0" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! Land/sea mask
+ inputname   = "LSM"
+ outputname  = "LSM" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil moisture index layer 1
+ inputname   = "SWVL1"
+ outputname  = "SMIL1" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil moisture index layer 2
+ inputname   = "SWVL2"
+ outputname  = "SMIL2" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil moisture index layer 3
+ inputname   = "SWVL3"
+ outputname  = "SMIL3" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! soil moisture index layer 4
+ inputname   = "SWVL4"
+ outputname  = "SMIL4" 
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! geopotential
+ inputname   = "Z" !search model level geopotential (only the surface level is required)
+ outputname  = "GEOP_ML"
+ intp_method = ${intp_method}
+/
+&input_field_nml  ! specific humidity
+ inputname   = "Q" !search specific humidity
+ outputname  = "QV" 
+ intp_method = ${intp_method}
+/
+REMAP_NML_EOF
+
+
+#ecmwf data vars:
+#/work/bb1224/2021_MS-COURSE/data/ecmwf/ecmwf-ana-global-2021051600.grb
+#w t q clwc ciwc crwc cswc u v lnsp z sst src z tsn skt stl1 stl2 stl3 stl4 sd rsn asn ci lsm sr cvl cvh sdor isor anor slor slt swvl1 swvl2 swvl3 swvl4
+
+
+ 
+#---------------------------------------------------------------------------
+# openmp environment variables
+# ----------------------------
+export OMP_NUM_THREADS=6 # 6 on compute2
+export ICON_THREADS=6    # 6 on compute2
+export OMP_SCHEDULE=dynamic,1
+export OMP_DYNAMIC="false"
+export OMP_STACKSIZE=4096M
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/netcdf/netcdf_fortran-4.4.3-gcc62/lib/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/netcdf/netcdf_c-4.4.1.1-gcc48/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/hdf5/hdf5-1.8.14-gcc48/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/sw/rhel6-x64/eccodes/eccodes-2.5.0-gcc48/lib/
+
+# ----------------------------
+# MPI variables
+# ----------------------------
+mpi_root=/sw/rhel6-x64/intel/impi/5.0.3.048/lib64
+no_of_nodes=${SLURM_JOB_NUM_NODES:-1}
+mpi_procs_pernode=6
+mpi_total_procs=$((no_of_nodes * mpi_procs_pernode))
+
+srun --kill-on-bad-exit=1 \
+	--nodes=${SLURM_JOB_NUM_NODES:-1} \
+	--ntasks-per-node=${mpi_procs_pernode} \
+	iconremap \
+		--remap_nml ${BASEDIR}/tmp.nml
+
+echo iconremap \
+	--remap_nml ${BASEDIR}/tmp.nml
+
+#-----------------------------------------------------------------------------
+exit
+#-----------------------------------------------------------------------------
