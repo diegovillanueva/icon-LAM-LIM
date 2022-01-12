@@ -54,6 +54,7 @@
 
 - [scripts/regrid_clm.sh](scripts/regrid_clm.sh)
 - [scripts/grid_details.py](scripts/grid_details.py)
+- [scripts/setlatlonAxe.sh](scripts/setlatlonAxe.sh)
 
 # Extras
 
