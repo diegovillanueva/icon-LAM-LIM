@@ -23,4 +23,10 @@ print "xinc     = " + str(s)
 print "yfirst   = " + str(ilat)
 print "yinc     = " + str(s)
 
+lats=[round(ilat+s*i,2) for i in range(int(rlat/s))]
+lons=[round(ilon+s*i,2) for i in range(int(rlon/s))]
+print lats
+print lons
+
+exit()
 
