@@ -50,12 +50,14 @@
 - `cd PathToIcon/run/`
 - `sbatch exp.icon_lam_1dom_EURECHA_1d.run`
 
-# Regrid (use sbatch)
+# Util scripts for regrid (use sbatch)
 
 - [scripts/regrid_clm.sh](scripts/regrid_clm.sh)
 - [scripts/grid_details.py](scripts/grid_details.py)
 - [scripts/setlatlonAxe.sh](scripts/setlatlonAxe.sh)
 - [scripts/setGridArea_SLM.sh](scripts/setGridArea_SLM.sh)
+- [scripts/separate_files_timestamp.sh](scripts/separate_files_timestamp.sh)
+
 
 # Extras
 
